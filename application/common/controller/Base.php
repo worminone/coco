@@ -29,14 +29,14 @@ class Base extends \think\Controller
         @define('ACTION_NAME', strtolower(Request::instance()->action() ));
 
         $origin = key_exists('HTTP_ORIGIN', $_SERVER) ? $_SERVER['HTTP_ORIGIN'] : '';
-        $sign = Request::instance()->param('sign') ?: '';
-        // 手机端请求或者php端的的请求
-        if ($sign || $origin == '') {
+        // 手机端请求和大道教育总后台的请求
+        if ($origin == '') {
             $this->termType = 'app';
             $this->appCheck();
 
         } else {   // 网页端请求
             $this->termType = 'web';
+            $origin = parse_url($origin, PHP_URL_HOST);
             $this->webCheck($origin);
         }
 
@@ -44,23 +44,13 @@ class Base extends \think\Controller
 
 
     //输出header
-    public function fromWeb($headers)
+    protected function myHeaders()
     {
-        $origin = key_exists('origin', $headers) ? $headers['origin'] : '';
-        if (!$origin) {
-            $referer = key_exists('referer', $headers) ? parse_url($headers['referer']) : '';
-            $origin = $referer ? $referer['scheme'] . '://' . $referer['host'] : '';
-        } else {
-            $origin = parse_url($origin);
-            $origin = $origin['scheme'] . '://' . $origin['host'];
-        }
-
-        //返回web请求的来源地址，包括协议和域名
-        if ($origin) {
-            return $origin;
-        } else {
-            return false;
-        }
+        $allowHeaders = 'Origin, X-Requested-With, If-Modified-Since, Content-Type, Accept, token, api-version';
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods:POST,GET,OPTIONS,DELETE,OPTIONS');
+        header('Access-Control-Allow-Headers: ' . $allowHeaders);
+        header('Content-type: application/json;charset=utf-8');
     }
 
 
@@ -68,22 +58,23 @@ class Base extends \think\Controller
     public function webCheck($origin)
     {
         $allowOrignConfig = config('allow_orgin');
-        $env = config('my_env');
-        //无须做验证的域名
-        $noCheckEnv = ['myself', 'dev'];
-        //$noCheckEnv = ['myself', 'dev', 'test'];
-        if (in_array($env, $noCheckEnv)) {
+        // aa($allowOrignConfig);
+        if (config('my_env') == 'myself' || config('my_env') == 'dev' || config('my_env') == 'test' ) {
             $this->myHeaders();
-        } elseif (strpos($origin, config('my_host'))) {
-            $this->myHeaders($origin);
+        } elseif (in_array($origin, $allowOrignConfig)) {
+            $this->myHeaders();
         } else {
-            $this->response(403, 'web request is forbidden!');
+            $this->response(403, '403 forbidden');
+            //header('Access-Control-Allow-Origin: *');
         }
     }
 
     // 原生APP的api请求验证签名
     public function appCheck()
     {
+        //非浏览器请求都有验证签名，就不需要做源域名检测
+        $this->myHeaders();
+
         $sign = input('sign');
         $para = input('post.') ? : input('get.');
 
@@ -103,22 +94,6 @@ class Base extends \think\Controller
                 }
             }
         }
-    }
-
-
-    //输出header
-    private function myHeaders($origin='')
-    {
-        $allowHeaders = 'Origin, X-Requested-With, If-Modified-Since, Content-Type, Accept, token, api-version';
-        if ($origin == '') {
-            header('Access-Control-Allow-Origin: *');
-        } else {
-            header('Access-Control-Allow-Origin: ' . $origin);
-        }
-
-        header('Access-Control-Allow-Methods:POST,GET,OPTIONS,DELETE,OPTIONS');
-        header('Access-Control-Allow-Headers: ' . $allowHeaders);
-        header('Content-type: application/json;charset=utf-8');
     }
 
 

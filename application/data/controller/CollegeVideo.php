@@ -3,9 +3,9 @@ namespace app\data\controller;
 
 use think\Db;
 use think\Request;
-use app\common\controller\Admin;
+use app\common\controller\Api;
 
-class CollegeVideo extends Admin
+class CollegeVideo extends Api
 {
     public function __construct(Request $Request)
     {
@@ -50,6 +50,7 @@ class CollegeVideo extends Admin
         $class_id = input('param.class_id', '', 'intval');
         $college_id = input('param.college_id', '', 'intval');
         $pagesize = input('param.pagesize', '10', 'int');
+        $title = input('param.title', '', 'htmlspecialchars');
         $where['c_id'] = $college_id;
         if (!empty($class_id)) {
             $where['college_type'] = $class_id;
@@ -57,6 +58,10 @@ class CollegeVideo extends Admin
         if (!empty($class_id)) {
             $where['college_type'] = $class_id;
         }
+        if (!empty($title)) {
+            $where['title'] = ['like', '%'.$title.'%'];
+        }
+
         $field = 'id as video_id,title,cover as video_img,content as video_url,
         initial_size,duration,college_id,college_type,create_time,c_id';
         $list = $this->getPageList('Video', $where, 'id desc', $field, $pagesize);
@@ -173,7 +178,7 @@ class CollegeVideo extends Admin
 
 
     /**
-     * @api {post} /data/CollegeVideo/editVideo 编辑视频数据（后台）
+     * @api {post} /index/CollegeVideo/editVideo 编辑视频数据（后台）
      * @apiVersion                               1.0.0
      * @apiName                                  editVideo
      * @apiGroup                                 CollegeVideo
@@ -199,7 +204,7 @@ class CollegeVideo extends Admin
      * "data": [
      * {
      *      video_id: 视频ID,
-     *      title: "标题",
+     *      title: "标题1",
      *      video_img: "视频图片",
      *      video_url: "视频地址",
      *      create_time: "发布时间"
@@ -216,33 +221,24 @@ class CollegeVideo extends Admin
         content as video_url,initial_size,duration,description as intro,create_time';
         $info = Db::name('Video')->field($field)->where($param)->find();
         if($info['class_id'] == 2 ) {
-            $m_where['college_id'] = $info['college_id'];
-            $m_where['majorNumber'] = $info['majorNumber'];
-            $m_info = Db::name('CollegeMajor')->where($m_where)->find();
-            if($m_info) {
-                $admin_key = config('admin_key');
-                $college_api = config('college_api');
-                $url =  $college_api.'/index/Major/getMajorInfo';
-                $param['type_id'] = $info['college_id'];
-                $param['college_id'] = $info['c_id'];
-                $param['admin_key'] = $admin_key;
-                $data = curl_api($url, $param, 'post');
-                if(!isset($data['data']['majorNumber'])) {
-                    $info['major_top_number'] = '';
-                    $info['major_type_number'] = '';
-                    $info['major_number'] = '';
-                    $info['major_id'] = '';
-                } else {
-                    $major_number = $data['data']['majorNumber'];
-                    $info['major_top_number'] = substr($major_number, 0 , 2);
-                    $info['major_type_number'] = substr($major_number, 0 , 4);
-                    $info['major_number'] = $major_number;
-                    $info['major_id'] = $info['college_id'];
-                }
-            } else {
-                $info['major_number'] = '';
-                $info['major_type_number'] = '';
+            $admin_key = config('admin_key');
+            $college_api = config('college_api');
+            $url =  $college_api.'/index/Major/getMajorInfo';
+            $param['type_id'] = $info['college_id'];
+            $param['college_id'] = $info['c_id'];
+            $param['admin_key'] = $admin_key;
+            $data = curl_api($url, $param, 'post');
+            if(!isset($data['data']['majorNumber'])) {
                 $info['major_top_number'] = '';
+                $info['major_type_number'] = '';
+                $info['major_number'] = '';
+                $info['major_id'] = '';
+            } else {
+                $major_number = $data['data']['majorNumber'];
+                $info['major_top_number'] = substr($major_number, 0 , 2);
+                $info['major_type_number'] = substr($major_number, 0 , 4);
+                $info['major_number'] = $major_number;
+                $info['major_id'] = $info['college_id'];
             }
             $info['college_id'] = $info['c_id'];
         }

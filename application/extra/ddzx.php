@@ -12,6 +12,17 @@ return [
     'evaluate_api' => 'http://evaluate2.api' . MY_HOST,
     'experts_api' => 'http://expert.api' . MY_HOST,
     'ddzx_api' => 'http://ddzx.api' . MY_HOST,
+    //本地
+    'college_api' => 'www.college.com',
+    'school_api' => 'www.high_school.com',
+    'gz_api' => 'http://gz' . MY_HOST,
+    'expert_api' => 'http://www.experts.com',
+    'ddzx_api' => 'www.admin.com',
+    'base_api' => 'http://www.base.com',
+    'evaluate_api' => 'www.evaluate.com',
+    'student_api' => 'http://student2.api' . MY_HOST,
+    'student_old' => 'http://student.api' . MY_HOST,
+    'parent_html' => 'http://parent.html' . MY_HOST,
 
     'sign_key' => 'JF0XMw6XhwU8jXHH',
 

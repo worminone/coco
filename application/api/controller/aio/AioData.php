@@ -1,4 +1,7 @@
 <?php
+/**
+ * 高中一体机
+ */
 namespace app\api\controller\aio;
 
 use think\Db;
@@ -169,12 +172,10 @@ class AioData extends Api
             $this->response(-1, '学校ID不能为空！');
         }
 
-        $start = ($page - 1) * $pagesize;
-        $limit = $start . ',' . $pagesize;
         $cnt = Db::name('aio')->alias('a')->join('aio_survival b', 'a.mac=b.mac_address', 'left')
-            ->where("school_id=$school_id")->count();
+            ->where("school_id=$school_id and edu_type=1")->count();
         $rs = Db::name('aio')->alias('a')->join('aio_survival b', 'a.mac=b.mac_address', 'left')
-            ->where("school_id=$school_id")->limit($limit)->select();
+            ->where("school_id=$school_id and edu_type=1")->select();
         $result['count'] = $cnt;
         $result['page_num'] = ceil($cnt / $pagesize);
         $result['pagesize'] = $pagesize;
