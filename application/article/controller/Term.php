@@ -304,9 +304,9 @@ class Term extends Admin
         //     'id'=>54,
         // ];
         $info = input('param.');
-        // if($info['publish_time'] =='' || $info['publish_time'] <= time()) {
-        //     $info['publish_time'] = time();
-        // }
+        if($info['publish_time'] =='' || $info['publish_time'] <= time()) {
+            $info['publish_time'] = time();
+        }
         if (empty($info['category_id'])) {
             $info['category_id'] = $info['category_top_id'];
         }

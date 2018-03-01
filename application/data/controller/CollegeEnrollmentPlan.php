@@ -356,9 +356,9 @@ class CollegeEnrollmentPlan extends Admin
      */
     public function planMultiplex()
     {
-        $ids = input('param.college_id', '', 'intval');
-        $ids = input('param.year', '');
-        $ids = input('param.mult_year', '');
+        $college_id = input('param.college_id', '', 'intval');
+        $year = input('param.year', '');
+        $mult_year = input('param.mult_year', '');
         $admin_key = config('admin_key');
         $college_api = config('college_api');
         $url =  $college_api.'/index/CollegeEnrollmentPlan/addCollegeMajorInPlan';

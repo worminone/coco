@@ -3,9 +3,9 @@ namespace app\data\controller;
 
 use think\Db;
 use think\Request;
-use app\common\controller\Admin;
+use app\common\controller\Api;
 
-class CollegeVideo extends Admin
+class CollegeVideo extends Api
 {
     public function __construct(Request $Request)
     {
@@ -50,6 +50,7 @@ class CollegeVideo extends Admin
         $class_id = input('param.class_id', '', 'intval');
         $college_id = input('param.college_id', '', 'intval');
         $pagesize = input('param.pagesize', '10', 'int');
+        $title = input('param.title', '', 'htmlspecialchars');
         $where['c_id'] = $college_id;
         if (!empty($class_id)) {
             $where['college_type'] = $class_id;
@@ -57,9 +58,14 @@ class CollegeVideo extends Admin
         if (!empty($class_id)) {
             $where['college_type'] = $class_id;
         }
+        if (!empty($title)) {
+            $where['title'] = ['like', '%'.$title.'%'];
+        }
+
         $field = 'id as video_id,title,cover as video_img,content as video_url,
         initial_size,duration,college_id,college_type,create_time,c_id';
         $list = $this->getPageList('Video', $where, 'id desc', $field, $pagesize);
+//        dd($list);
         foreach ($list['list'] as $key => $value) {
             if($value['college_type'] == 2 ) {
                 $admin_key = config('admin_key');
@@ -69,7 +75,8 @@ class CollegeVideo extends Admin
                 $param['college_id'] = $value['c_id'];
                 $param['admin_key'] = $admin_key;
                 $data = curl_api($url, $param, 'post');
-                if ($data['code'] == -1) {
+
+                if (!isset($data['data']['majorName'])) {
                     $list['list'][$key]['major_name'] = '';
                 } else {
                     $list['list'][$key]['major_name'] = $data['data']['majorName'];
@@ -197,7 +204,7 @@ class CollegeVideo extends Admin
      * "data": [
      * {
      *      video_id: 视频ID,
-     *      title: "标题",
+     *      title: "标题1",
      *      video_img: "视频图片",
      *      video_url: "视频地址",
      *      create_time: "发布时间"
@@ -213,7 +220,6 @@ class CollegeVideo extends Admin
         $field = 'id as video_id,c_id,college_type as class_id,college_id,title,cover as video_img,
         content as video_url,initial_size,duration,description as intro,create_time';
         $info = Db::name('Video')->field($field)->where($param)->find();
-
         if($info['class_id'] == 2 ) {
             $admin_key = config('admin_key');
             $college_api = config('college_api');
@@ -222,7 +228,7 @@ class CollegeVideo extends Admin
             $param['college_id'] = $info['c_id'];
             $param['admin_key'] = $admin_key;
             $data = curl_api($url, $param, 'post');
-            if($data['code'] == -1) {
+            if(!isset($data['data']['majorNumber'])) {
                 $info['major_top_number'] = '';
                 $info['major_type_number'] = '';
                 $info['major_number'] = '';
@@ -279,7 +285,7 @@ class CollegeVideo extends Admin
             $param['college_id'] = $param['major_id'];
         }
         $res = Db::name('Video')->update($param);
-        if ($res !==false) {
+        if ($res !== false) {
             $this->response('1', '操作成功');
         } else {
             $this->response('-1', '操作失败');

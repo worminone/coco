@@ -262,7 +262,7 @@ class TeacherUse extends Api
         $model = new Menu();
         $list = $model->getLessonMain($id);
         $teachingModel = new TeachingContent();
-        $type = 3;
+        $type = 1;
         $teachContent = $teachingModel->getContentDetail($list, $type);
         $title = Db::name('teaching_catalogue')->where('id', $id)->value('name');
         $cover = Db::name('prepare_lesson')->where('catalogue_id', $id)->value('cover');

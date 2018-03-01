@@ -2,6 +2,7 @@
 namespace app\api\controller\school;
 
 use think\Db;
+use think\Request;
 use app\common\controller\Api;
 
 class SchoolModule extends Api

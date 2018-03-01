@@ -21,6 +21,7 @@ class AioSurvival extends Api
      * @apiParam {string} aio_rom_version 固件版本
      * @apiParam {string} aio_app_name 软件名称(可为空)
      * @apiParam {string} aio_app_version 软件版本(可为空)
+     * @apiParam {string} is_debug 区分正式/测试版本(可为空，0正式 1测试 默认0)
      *
      * @apiSuccess {Int} code 错误代码，1是成功，-1是失败.
      * @apiSuccess {String} msg 成功的信息和失败的具体信息.
@@ -31,6 +32,7 @@ class AioSurvival extends Api
         $type = input('param.aio_time_type', 0);
         $mac = strtoupper(input('param.aio_mac_id', ''));
         $rom_version = input('param.aio_rom_version', '');
+        $is_debug = input('param.is_debug', 0);
         if (empty($mac) || empty($rom_version)) {
             $this->response(-1, 'MAC地址/固件版本不能为空！');
         }
@@ -57,6 +59,7 @@ class AioSurvival extends Api
                 $data['refresh_time'] = date("Y-m-d H:i:s");
             }
         }
+        $data['is_debug'] = $is_debug;
         $data['mac_address'] = $mac;
         $data['updated'] = date("Y-m-d H:i:s");
         $exist = Db::name('aio_survival')->where("mac_address='$mac'")->find();

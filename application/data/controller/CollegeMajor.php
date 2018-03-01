@@ -347,6 +347,11 @@ class CollegeMajor extends Admin
         $param['id'] = $id;
         $param['admin_key'] = $admin_key;
         $data = curl_api($url, $param, 'post');
+//        if($data['data']) {
+//            $v_where['college_id'] = ['in', $data['data']];
+//            $v_where['term_type'] = 0;
+//            Db::name('CollegeVideo')->where($v_where)->delete();
+//        }
         echo json_encode($data);
     }
 

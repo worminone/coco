@@ -104,11 +104,8 @@ class TeachingContent extends Model
         if (!empty($article)) {//资讯
             //请求资讯接口
             $articleList = $this->getArticleInfo(implode(',', $article));
-            if (!empty($articleList['data'])) {
-                if (!is_array($articleList['data'])) {
-                    $articleList['data'] = array($articleList['data']);
-                }
-                foreach ($articleList['data'] as $articleValue) {
+            if (!empty($articleList['datas'])) {
+                foreach ($articleList['datas'] as $articleValue) {
                     $article[$articleValue['id']] = $articleValue;
                 }
             }
@@ -208,7 +205,7 @@ class TeachingContent extends Model
                                         array(5)) && !empty($article[$teachValue['upload_id']])
                                 ) {//资讯
                                     $teachValue['title'] = $article[$teachValue['upload_id']]['title'];
-                                    $teachValue['cover'] = !empty($article[$teachValue['upload_id']]['img']) ? getGZPic($article[$teachValue['upload_id']]['img']) : getDefaultPic();
+                                    $teachValue['cover'] = !empty($article[$teachValue['upload_id']]['pic_url']) ? getGZPic($article[$teachValue['upload_id']]['pic_url']) : getDefaultPic();
                                     $teachValue['url'] = '';
                                     $teachValue['description'] = $article[$teachValue['upload_id']]['content'];
                                     $teachValue['ext'] = '';
@@ -225,7 +222,7 @@ class TeachingContent extends Model
                         }
                     }
                 }
-                $contentUrl = config('student_app_api2') . '/api/Classroom/getInfo.php?id=' . $teachValue['id'];
+                $contentUrl = config('student_app_api') . '/api/Classroom/getInfo.php?id=' . $teachValue['id'];
                 $teachValue['QRcode'] = config('base_api') . '/api/qrcode/getqr?url=' . $contentUrl;
             }
         }
@@ -299,9 +296,14 @@ class TeachingContent extends Model
      */
     public function getArticleInfo($id)
     {
-        $url = 'http://' . $_SERVER['SERVER_NAME'] . '/Api/app.ArticleManage/articleInfo';
-        $InfoData['id'] = $id;
-        $output = curl_api($url, $InfoData, 'post');
+        $url = config('gz_api') . '/index.php?app=school&act=art_content&type_id=4&id=' . $id;
+
+        $output = file_get_contents($url);
+        if (preg_match('/^\xEF\xBB\xBF/', $output))    //去除可能存在的BOM
+        {
+            $output = substr($output, 3);
+        }
+        $output = json_decode($output, true);
         return $output;
     }
 
@@ -337,8 +339,13 @@ class TeachingContent extends Model
      */
     public function getArticleList()
     {
-        $url = 'http://' . $_SERVER['SERVER_NAME'] . '/api/app.ArticleManage/getArticleListV2';
-        $output = curl_api($url, '', 'post');
+        $url = config('gz_api') . '/index.php?app=school&act=art_list&type_id=4&equipment_id=5';
+        $output = file_get_contents($url);
+        if (preg_match('/^\xEF\xBB\xBF/', $output))    //去除可能存在的BOM
+        {
+            $output = substr($output, 3);
+        }
+        $output = json_decode($output, true);
         return $output;
     }
 

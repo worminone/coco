@@ -37,7 +37,10 @@ class Sale extends Base
             $where['combo_id'] = $combo_id;
         }
         if (strlen($name)>0){
-            $where['school_name'] = ['like', '%'.$name.'%'];
+            $wheres['school_name'] = $name;
+            $urls = config('school_api').'/api/SchoolData/SchoolListByName';
+            $school_id = curl_api($urls, $wheres, 'post');
+            $where['school_id'] = ['in', $school_id['data']];
         }
         if ($pageSize == 0) {
             $pageSize = 10;

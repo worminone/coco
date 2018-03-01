@@ -782,7 +782,7 @@ class AioTopic extends Api
     }
 
     /**
-     * @api {post} /Api/aio.AioTopic/index 首页
+     * @api {post} /Api/aio.AioTopic/index41 首页
      * @apiVersion              1.0.0
      * @apiName                 index
      * @apiGROUP                APi
@@ -852,6 +852,10 @@ class AioTopic extends Api
         // 'voluntarily_category'=>'129' //一体机 自愿填报分类ID
         // 'career_category'=>'119'      //一体机 生涯规划分类ID
         // 'eighteen_category'=>'137',   //一体机 生涯十八讲分类ID
+
+        $journal['index_img'] = $index_info[1]['img_url'];
+        $journal['title'] = $index_info[1]['title'];
+
         $index_info[0]['url'] = '/api/aio.AioTopic/termHeadList/category_id/'.$new_category;
         $index_info[0]['index_img'] = $index_info[0]['img_url'];
         $index_info[0]['topic_type'] = 11;

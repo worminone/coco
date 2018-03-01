@@ -1,5 +1,6 @@
 <?php
 /**
+ * 高中一体机（不包含教育局一体机）
  * Created by PhpStorm.
  * User: Zhengchenfei
  * Date: 2017/12/25 0025
@@ -124,6 +125,7 @@ class AioData extends Admin
      * @apiParam {String} transport 运输方式.
      * @apiParam {String} shipping_address 收货地址.
      * @apiParam {String} remark 备注.
+     * @apiParam {Int} edu_type 类型（1：高中 2：教育局，默认为1）
      *
      * @apiSuccess {Int} code 错误代码，1是成功，-1是失败.
      * @apiSuccess {String} msg 成功的信息和失败的具体信息.
@@ -148,6 +150,7 @@ class AioData extends Admin
         $data['address_man'] = $address_man = input('param.address_man', '');
         $data['phone'] = $phone = input('param.phone', '');
         $data['use_type'] = $use_type = input('param.use_type', 0);
+        $data['edu_type'] = input('param.edu_type', 1);
         if (empty($manufact_id) || empty($mac) || empty($in_charge)
             || empty($address_man) || empty($phone) || empty($use_type)
         ) {
@@ -361,6 +364,7 @@ class AioData extends Admin
      * @apiParam {int} status 状态（0:全部 1:正常使用,2:未绑定,3:报废,4:维修）.
      * @apiParam {int} page 页数,默认1
      * @apiParam {int} pagesize 每页数量,默认20
+     * @apiParam {Int} edu_type 类型（1：高中 2：教育局，默认为1）
      *
      * @apiSuccess {Int} code 错误代码，1是成功，-1是失败.
      * @apiSuccess {String} msg 成功的信息和失败的具体信息.
@@ -377,6 +381,7 @@ class AioData extends Admin
         empty($pagesize) && $pagesize = 20;
 
         $where = [];
+        $where['edu_type'] = input('param.edu_type', 1);
         !empty($status) && $where['status'] = ['in', $status];
         !empty($school_id) && $where['school_id'] = $school_id;
 
@@ -748,6 +753,7 @@ class AioData extends Admin
             }
 
             $flag = 1;
+            $unexist_schools = [];
             $result_add_datas = [];
             $result_up_datas = [];
             $unique_keys = [];
@@ -765,7 +771,7 @@ class AioData extends Admin
                     continue;
                 }
                 $unique_keys[] = $unique_key;
-                $valid_msg = $this->checkImport($exist_manufactures, $exist_canals, $exist_aios, $regions, $schools, $row);
+                $valid_msg = $this->checkImport($exist_manufactures, $exist_canals, $exist_aios, $regions, $schools, $row, $unexist_schools);
                 if ($valid_msg['flag'] == 'error') {
                     $flag = 0;
                     $fdetail[] = "第" . $row['line'] . "行：" . $valid_msg['detail'];
@@ -825,7 +831,7 @@ class AioData extends Admin
         }
     }
 
-    private function checkImport(&$exist_manufactures, &$exist_canals, $exist_aios, $regions, &$schools, &$data)
+    private function checkImport(&$exist_manufactures, &$exist_canals, $exist_aios, $regions, &$schools, &$data, &$unexist_schools)
     {
         $msg['flag'] = 'ok';
         $msg['detail'] = '';
@@ -911,6 +917,11 @@ class AioData extends Admin
                 $msg['detail'] .= '学校区县不正确；';
             }
             if (empty($schools[$data['school_id']])) {
+                if (in_array($data['school_id'], $unexist_schools)) {
+                    $msg['flag'] = 'error';
+                    $msg['detail'] .= '学校名称不正确；';
+                    return $msg;
+                }
                 $school_api = config('school_api');
                 $url = $school_api . '/api/SchoolManage/getList';
                 $param['keyword'] = $data['school_id'];
@@ -933,8 +944,10 @@ class AioData extends Admin
                     }
                 }
                 if (!$flag) {
+                    $unexist_schools[] = $data['school_id'];
                     $msg['flag'] = 'error';
                     $msg['detail'] .= '学校名称不正确；';
+                    return $msg;
                 }
             }
             if ($schools[$data['school_id']]['enterflag'] != 2) {
@@ -1061,6 +1074,7 @@ class AioData extends Admin
         );
         $where = [];
         !empty($ids) && $where['id'] = array('in', explode(',', $ids));
+        $where['edu_type'] = 1;
 
         $qr = Db::name('aio')->alias('a')->join('aio_survival b', 'a.mac=b.mac_address', 'left');
         !empty($where) && $qr->where($where);
@@ -1109,7 +1123,7 @@ class AioData extends Admin
             $data['ver_name'] = $row['app_name'];
             $data['ver_num'] = $row['app_version'];
             $data['post_address'] = $row['post_address'];
-            $data['post_time'] = !empty($row['post_time'])? date("Y-m-d H:i:s", $row['post_time']) : '';
+            $data['post_time'] = !empty($row['post_time'])? date("Y-m-d", $row['post_time']) : '';
             //$data['firmware'] = $row['firmware'];
             $data['rom_version'] = $row['rom_version'];
             $data['color'] = $row['color'];

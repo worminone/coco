@@ -145,7 +145,7 @@ class UserManage extends Admin
         $region_id = input('region_id', "");
         $province_id = input('province_id', "");
         $gender = input('gender', "");
-        $isAuth = input('is_ath', "");
+        $isAuth = input('is_auth', "");
         $list = array();
         switch ($type) {
             case 1://高中学校用户
@@ -177,7 +177,7 @@ class UserManage extends Admin
         ($region_id != "") && $data['region_id'] = $region_id;
         ($province_id != "") && $data['province_id'] = $province_id;
         ($gender != "") && $data['gender'] = $gender;
-        ($isAuth != "") && $data['is_ath'] = $isAuth;
+        ($isAuth != "") && $data['is_auth'] = $isAuth;
         $list = curl_api($url, $data, 'post', 0);
 
         $this->response(1, '获取成功', !empty($list['data']) ? $list['data'] : array('count' => 0));

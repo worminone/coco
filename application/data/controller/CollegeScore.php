@@ -327,6 +327,7 @@ class CollegeScore extends Admin
         $param = input('param.');
         $param['department_id'] = input('param.department_id', '0');
         $param['enrollmentBatch'] = $param['batch'];
+        $param['year'] = $param['enrollmentYear'];
         $admin_key = config('admin_key');
         $college_api = config('college_api');
         $url =  $college_api.'/index/CollegeScore/saveCollegeScore';
@@ -388,6 +389,44 @@ class CollegeScore extends Admin
         $url =  $college_api.'/index/CollegeScore/excelScore';
         $param['url'] = $excel_url;
         $param['college_id'] = $college_id;
+        $param['admin_key'] = $admin_key;
+        $data = curl_api($url, $param, 'post');
+        echo json_encode($data);
+    }
+    /**
+     * @api {post} /data/CollegeScore/exportScore 院校分数导出
+     * @apiVersion                                      1.0.0
+     * @apiName                                         exportScore
+     * @apiGroup                                        CollegeScore
+     * @apiDescription                                  院校分数导出
+     *
+     * @apiParam {String} token             用户的token.
+     * @apiParam {String} time              请求的当前时间戳.
+     * @apiParam {String} sign              签名.
+     * @apiParam {Int} college_id           院校ID.
+     * @apiParam {Int} department_id        院系ID.
+     * @apiParam {Int} province_id          省份ID.
+     * @apiParam {String} science           学科名称.
+     * @apiParam {Int} enrollmentYear       年份.
+     * @apiParam {String} enrollmentBatch   批次.
+     * @apiParam {Int} pagesize             分页数量.
+     * @apiParam {Int} page                 当前页数.
+     *
+     *
+     * @apiSuccess {Int} code 错误代码，1是成功，-1是失败.
+     * @apiSuccess {String} msg 成功的信息和失败的具体信息.
+     */
+    public function exportScore()
+    {
+        $param['department_id'] = input('param.department_id', '');
+        $param['province_id'] = input('param.province_id', '');
+        $param['science'] = input('param.science');
+        $param['enrollmentYear'] = input('param.enrollmentYear', '', 'intval');
+        $param['enrollmentBatch'] = input('param.enrollmentBatch');
+        $param['college_id'] = input('param.college_id', '', 'intval');
+        $admin_key = config('admin_key');
+        $college_api = config('college_api');
+        $url =  $college_api.'/index/CollegeScore/exportScore';
         $param['admin_key'] = $admin_key;
         $data = curl_api($url, $param, 'post');
         echo json_encode($data);

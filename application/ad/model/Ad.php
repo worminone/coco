@@ -401,7 +401,9 @@ class Ad extends Model
     {
         $where['show_type'] = 2;
         $where['status'] = 1;
-        $where['UNIX_TIMESTAMP(end_date)'] = ['>=', time()-86400];
+        $time = strtotime(date('Y-m-d',time()));
+        $where['UNIX_TIMESTAMP(end_date)'] = ['>=', $time];
+        $where['UNIX_TIMESTAMP(start_date)'] = ['<=', $time];
         $p_where['province'] = $province_id;
         if (!$province_id) {
             $p_where['province'] = ['>=', 0];

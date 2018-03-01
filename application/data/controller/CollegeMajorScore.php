@@ -305,4 +305,47 @@ class CollegeMajorScore extends Admin
         $data = curl_api($url, $param, 'post');
         echo json_encode($data);
     }
+    /**
+     * @api {post} /data/CollegeMajorScore/exportMajorScore 专业分数导出
+     * @apiVersion                                      1.0.0
+     * @apiName                                         exportMajorScore
+     * @apiGroup                                        CollegeMajorScore
+     * @apiDescription                                  专业分数导出
+     *
+     * @apiParam {String} token             用户的token.
+     * @apiParam {String} time              请求的当前时间戳.
+     * @apiParam {String} sign              签名.
+     * @apiParam {Int} college_id           院校ID.
+     * @apiParam {Int} department_id        院系ID.
+     * @apiParam {Int} province_id          省份ID.
+     * @apiParam {String} science           学科名称.
+     * @apiParam {Int} enrollmentYear       年份.
+     * @apiParam {String} enrollmentBatch   批次.
+     * @apiParam {Int} pagesize             分页数量.
+     * @apiParam {Int} page                 当前页数.
+     *
+     *
+     * @apiSuccess {Int} code 错误代码，1是成功，-1是失败.
+     * @apiSuccess {String} msg 成功的信息和失败的具体信息.
+     */
+    public function exportMajorScore()
+    {
+        $param['college_id'] = input('param.college_id', '' );
+        $param['province_id'] = input('param.province_id', '');
+        $param['enrollmentYear'] = input('param.year', '' );
+        $param['department_id'] = input('param.department_id', '');
+        $param['science'] = input('param.science', '');
+        $param['batch'] = input('param.batch', '');
+        $param['title'] = input('param.title', '', 'htmlspecialchars');
+        $param['page'] = input('param.page', '1', 'int');
+        $param['pagesize'] = input('param.pagesize', '9999', 'int');
+        $admin_key = config('admin_key');
+        $college_api = config('college_api');
+        $url =  $college_api.'/index/CollegeMajorScore/exportMajorScore';
+        $param['admin_key'] = $admin_key;
+        $data = curl_api($url, $param, 'post');
+        echo json_encode($data);
+
+
+    }
 }

@@ -286,6 +286,7 @@ class Major extends Admin
         $major_type_number = input('param.majorTypeNumber', '', 'htmlspecialchars');
         $need_year = input('param.needYear', '不限', 'htmlspecialchars');
         $grant_degree = input('param.grantDegree', '', 'htmlspecialchars');
+        $educationType = input('param.educationType', '', 'htmlspecialchars');
         $admin_key = config('admin_key');
         $college_api = config('college_api');
         $url =  $college_api.'/index/Major/majorList';
@@ -293,6 +294,7 @@ class Major extends Admin
         $param['page'] = $page;
         $param['majorTypeNumber'] = $major_type_number;
         $param['majorName'] = $major_name;
+        $param['educationType'] = $educationType;
         $param['needYear'] = $need_year;
         $param['grantDegree'] = $grant_degree;
         $param['admin_key'] = $admin_key;

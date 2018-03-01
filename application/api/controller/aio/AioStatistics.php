@@ -40,6 +40,10 @@ class AioStatistics extends Api
             $this->response(-1, '省份ID不能为空');
         }
 
+        if (! $request['term_type']) {
+            $this->response(-1, '终端类型不能为空');
+        }
+
         $bool = false;
         if (key_exists('is_ad', $request) && $request['is_ad'] > 0) {
             $model = new Statistics();

@@ -165,7 +165,7 @@ class SchoolManage extends Admin
      * @apiParam {String} school_intro 学校简介
      * @apiParam {String} school_culture 学校文化
      * @apiParam {Int} enterflag 入驻标志：0否 1是
-     * @apiParam {Int} enter_time 入驻时间
+     * @apiParam {Int} enter_time  入驻时间
      * @apiParam {String} tags 属性（多个用","分隔）
      *
      * @apiSuccess {Int} code 错误代码，1是成功，-1是失败.

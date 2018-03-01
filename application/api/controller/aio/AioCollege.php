@@ -184,14 +184,13 @@ class AioCollege extends Api
         $url =  $college_api.'/index/CollegeAdmin/getCollegeInfo';
         $param['college_id'] = $college_id;
         $param['admin_key'] = $admin_key;
-        $v_param['key_id'] = 'college_id';
+        $v_param['school_id'] = input('param.aio_school_id', '0', 'intval');
+        $v_param['term_type'] = 1;
+        $v_param['type'] = 1;
         $v_param['id'] = $college_id;
-        $v_param['table'] = 'College';
-        $v_url =  $college_api.'/index/CollegeAdmin/addBrowView';
+        $v_url =  $college_api.'/index/CollegeAdmin/addView';
         curl_api($v_url, $v_param, 'post');
         $data = curl_api($url, $param, 'post');
-//        $data['data']['boy_num'] = intval($data['data']['boy_num']);
-//        $data['data']['girl_num'] = intval($data['data']['girl_num']);
         echo json_encode($data);
     }
 
@@ -473,7 +472,7 @@ class AioCollege extends Api
      */
     public function getCollegePicInfo()
     {
-        $id = input('param.pic_id', '', 'int');
+        $pic_id = input('param.pic_id', '', 'int');
         $admin_key = config('admin_key');
         $college_api = config('college_api');
         $url =  $college_api.'/index/CollegeAdmin/getTeachersInfo';
@@ -981,10 +980,11 @@ class AioCollege extends Api
         $param['occupation_id'] = $occupation_id;
         $param['admin_key'] = $admin_key;
         $data = curl_api($url, $param, 'post');
-        $v_param['key_id'] = 'occupation_id';
-        $v_param['table'] = 'OccupationInfo';
-        $v_url =  $college_api.'/index/CollegeAdmin/addBrowView';
+        $v_param['school_id'] = input('param.aio_school_id', '0', 'intval');
+        $v_param['term_type'] = 1;
+        $v_param['type'] = 3;
         $v_param['id'] = $occupation_id;
+        $v_url =  $college_api.'/index/CollegeAdmin/addView';
         curl_api($v_url, $v_param, 'post');
         echo json_encode($data);
     }
@@ -1168,9 +1168,10 @@ class AioCollege extends Api
         $data = curl_api($url, $param, 'post');
         $res_data = $data['data']['list'];
         $data['data'] = $res_data;
-        $v_param['key_id'] = 'type_id';
-        $v_param['table'] = 'MajorInfo';
-        $v_url =  $college_api.'/index/CollegeAdmin/addBrowView';
+        $v_param['school_id'] = input('param.aio_school_id', '0', 'intval');
+        $v_param['term_type'] = 1;
+        $v_param['type'] = 2;
+        $v_url =  $college_api.'/index/CollegeAdmin/addView';
         foreach ($data['data'] as $key => $value) {
             $v_param['id'] = $value['type_id'];
             curl_api($v_url, $v_param, 'post');
@@ -1355,9 +1356,10 @@ class AioCollege extends Api
         $data = curl_api($url, $param, 'post');
         $res_data = $data['data']['list'];
         $data['data'] = $res_data;
-        $v_param['key_id'] = 'type_id';
-        $v_param['table'] = 'MajorInfo';
-        $v_url =  $college_api.'/index/CollegeAdmin/addBrowView';
+        $v_param['school_id'] = input('param.aio_school_id', '0', 'intval');
+        $v_param['term_type'] = 1;
+        $v_param['type'] = 2;
+        $v_url =  $college_api.'/index/CollegeAdmin/addView';
         foreach ($data['data'] as $key => $value) {
             $v_param['id'] = $value['type_id'];
             curl_api($v_url, $v_param, 'post');
@@ -1409,6 +1411,12 @@ class AioCollege extends Api
         $param['type_id'] = $type_id;
         $param['admin_key'] = $admin_key;
         $data = curl_api($url, $param, 'post');
+        $v_param['school_id'] = input('param.aio_school_id', '0', 'intval');
+        $v_param['term_type'] = 1;
+        $v_param['type'] = 2;
+        $v_param['id'] = $type_id;
+        $v_url =  $college_api.'/index/CollegeAdmin/addView';
+        curl_api($v_url, $v_param, 'post');
         echo json_encode($data);
     }
 
