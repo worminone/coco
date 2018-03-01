@@ -11,6 +11,7 @@
 
 //获取顶级域名
 $myAllHost = $_SERVER['HTTP_HOST'];
+$myAllHost = explode(':', $myAllHost)[0];
 $myAllHostArr = explode('.', $myAllHost);
 $hostArrCount = count($myAllHostArr);
 $myDomainHost = '.' . $myAllHostArr[$hostArrCount-2] . '.' .$myAllHostArr[$hostArrCount-1];
